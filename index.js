@@ -1,20 +1,16 @@
 const express = require('express');
 const app = express();
 
-app.get('/things/:id', (req, res) => {
-  const id = req.params.id;
-
-  if (/^\d{5}$/.test(id)) {
-    res.send(`Valid ID: ${id}`);
-  } else {
-    res.status(400).send('Invalid ID. Must be exactly 5 digits.');
-  }
+app.get(/^\/things\/(\d{5})$/, function(req, res){
+   const id = req.url.match(/^\/things\/(\d{5})$/)[1];
+   res.send('id: ' + id);
 });
 
-app.get('/*splat', (req, res) => {
-  res.status(404).send('Not Found');
+//Other routes here
+app.get('/*splat', function(req, res){
+   res.send('Sorry, this is an invalid URL.');
 });
 
 app.listen(3000, () => {
-  console.log('Server listening on port 3000');
+   console.log('Server running on http://localhost:3000');
 });
