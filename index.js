@@ -1,16 +1,14 @@
-const express = require('express');
-const app = express();
+var express = require('express');
+var app = express();
 
-app.get(/^\/things\/(\d{5})$/, function(req, res){
-   const id = req.url.match(/^\/things\/(\d{5})$/)[1];
-   res.send('id: ' + id);
+// Simple request time logger
+app.use(function(req, res, next){
+   console.log("A new request received at " + Date.now());
+   
+   // This function call is very important. It tells that more processing is
+   // required for the current request and is in the next middleware
+   // function route handler.
+   next();
 });
 
-//Other routes here
-app.get('/*splat', function(req, res){
-   res.send('Sorry, this is an invalid URL.');
-});
-
-app.listen(3000, () => {
-   console.log('Server running on http://localhost:3000');
-});
+app.listen(3000);
