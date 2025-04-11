@@ -4,11 +4,8 @@ var app = express();
 app.set('view engine', 'pug');
 app.set('views','./views');
 
-app.get('/dynamic_view', function(req, res){
-   res.render('dynamic',{
-      user: {name: "Ayush", age: "20"}
-   });
+app.get('/components', function(req, res){
+    res.render('content');
 });
-
 
 app.listen(3000);
