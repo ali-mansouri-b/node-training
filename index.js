@@ -1,20 +1,11 @@
 var express = require('express');
 var app = express();
 
-// First middleware before response is sent
-app.use(function(req, res, next){
-   console.log("Start");
-   next();
-});
+app.set('view engine', 'pug');
+app.set('views','./views');
 
-// Route handler
-app.get('/', function(req, res, next){
-   res.send("Middle");
-   next();
-});
-
-app.use('/', function(req, res){
-   console.log('End');
+app.get('/first_template', function(req, res){
+   res.render('first_view');
 });
 
 app.listen(3000);
