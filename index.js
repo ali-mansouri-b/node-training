@@ -1,29 +1,15 @@
-var express = require('express');
-var bodyParser = require('body-parser');
-var multer = require('multer');
-var upload = multer();
-var app = express();
+const express = require("express");
+const connectDB = require("./db");
+const app = express();
+const PORT = 3000;
 
-app.get('/', function(req, res){
-   res.render('form');
+// connect to database
+connectDB();
+
+app.get("/", (req, res) => {
+  res.send("Hello world Express.js + MongoDB!");
 });
 
-app.set('view engine', 'pug');
-app.set('views', './views');
-
-// for parsing application/json
-app.use(bodyParser.json()); 
-
-// for parsing application/xwww-
-app.use(bodyParser.urlencoded({ extended: true })); 
-//form-urlencoded
-
-// for parsing multipart/form-data
-app.use(upload.array()); 
-app.use(express.static('public'));
-
-app.post('/', function(req, res){
-   console.log(req.body);
-   res.send("recieved your request!");
+app.listen(PORT, () => {
+  console.log(`servier is running on http://localhost:${PORT}`);
 });
-app.listen(3000);
