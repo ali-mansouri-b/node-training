@@ -29,7 +29,6 @@ exports.updateTodo = async (req, res) => {
       { new: true } // برگرداندن نسخه آپدیتشده
     );
     res.json(todo);
-    await todo.save()
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
