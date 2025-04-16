@@ -1,32 +1,32 @@
-var express = require('express');
-var bodyParser = require('body-parser');
+const express = require('express')
+const multer  = require('multer')
+const os = require('os'); 
 
-var app = express();
+// set the temp directory to upload a file
+const upload = multer({ dest: os.tmpdir() })
 
-app.set('view engine', 'pug');
-app.set('views', './views');
+const app = express()
 
-// for parsing application/json
-app.use(bodyParser.json()); 
+// upload a single file
+app.post('/uploadFile', upload.single('uploadedFile'), function (req, res, next) {
+  // req.file is the `uploadedFile` file
+  const file = req.file;
+  const fileName = req.file.originalname;
 
-// for parsing application/xwww-
-app.use(bodyParser.urlencoded({ extended: true })); 
+  console.log(fileName + " saved in " + os.tmpdir());
+  console.log(file);
 
-app.use(express.static('public'));
+  res.sendStatus(200);
+})
 
-app.get('/', function(req, res){
-   res.render('form');
-});
+// upload multiple files
+app.post('/uploadFiles', upload.array('uploadedFiles', 12), function (req, res, next) {
+  // req.files is the array of 'uploadedFiles' files
+  const files = req.files;
+  console.log("Files uploaded in " + os.tmpdir());
+  console.log(files);
 
-// handle form submission
-app.post('/', function(req, res){
-   // read the number entered by the user
-   const number = parseInt(req.body.number);
-   
-   // compute square of the number
-   const square = Math.pow(number, 2);
+  res.sendStatus(200);
+})
 
-   // return the result
-   res.render('form', { result: square });
-});
 app.listen(3000);
