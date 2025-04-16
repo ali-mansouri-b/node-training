@@ -1,14 +1,12 @@
 html
    head
-      title Form Tester
+      title Dynamic Content
    body
       form(action = "/", method = "POST")
          div
-            label(for = "say") Say:
-            input(name = "say" value = "Hi")
+            label(for = "number") Enter Number:
+            input(name = "number" value = "10")
          br
-         div
-            label(for = "to") To:
-            input(name = "to" value = "Express forms")
-         br
-         button(type = "submit") Send my greetings
+         button(type = "submit") Calculate
+         if(result)
+            h3 Square of Number: #{result}

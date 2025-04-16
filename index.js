@@ -1,92 +1,32 @@
 var express = require('express');
+var bodyParser = require('body-parser');
 
 var app = express();
-var bodyParser = require('body-parser');
-var multer = require('multer');
-var upload = multer(); 
-var session = require('express-session');
-var cookieParser = require('cookie-parser');
 
 app.set('view engine', 'pug');
-app.set('views','./views');
+app.set('views', './views');
 
-app.use(bodyParser.json());
+// for parsing application/json
+app.use(bodyParser.json()); 
+
+// for parsing application/xwww-
 app.use(bodyParser.urlencoded({ extended: true })); 
-app.use(upload.array());
-app.use(cookieParser());
 
-app.use(session({
-   secret: 'sample-secret',
-   resave: false,
-   saveUninitialized: false
-}));
+app.use(express.static('public'));
 
-var Users = [];
-
-app.get('/signup', function(req, res){
-   res.render('signup');
+app.get('/', function(req, res){
+   res.render('form');
 });
 
-app.post('/signup', function(req, res){
-   if (!req.body.id || !req.body.password) {
-      return res.status(400).send("Invalid details!");
-   }
+// handle form submission
+app.post('/', function(req, res){
+   // read the number entered by the user
+   const number = parseInt(req.body.number);
+   
+   // compute square of the number
+   const square = Math.pow(number, 2);
 
-   const existingUser = Users.find(user => user.id === req.body.id);
-   if (existingUser) {
-      return res.render('signup', { message: "User Already Exists! Login or choose another user id" });
-   }
-
-   const newUser = { id: req.body.id, password: req.body.password };
-   Users.push(newUser);
-   req.session.user = newUser;
-   res.redirect('/protected_page');
+   // return the result
+   res.render('form', { result: square });
 });
-function checkSignIn(req, res, next){
-   if(req.session.user){
-      next();     //If session exists, proceed to page
-   } else {
-      var err = new Error("Not logged in!");
-      console.log(req.session.user);
-      next(err);  //Error, trying to access unauthorized page!
-   }
-}
-app.get('/protected_page', checkSignIn, function(req, res){
-   res.render('protected_page', {id: req.session.user.id})
-});
-
-app.get('/login', function(req, res){
-   res.render('login');
-});
-
-app.post('/login', function(req, res){
-   if (!req.body.id || !req.body.password) {
-      return res.render('login', { message: "Please enter both id and password" });
-   }
-
-   const user = Users.find(user => 
-      user.id === req.body.id && user.password === req.body.password
-   );
-
-   if (user) {
-      req.session.user = user;
-      return res.redirect('/protected_page');
-   }
-
-   res.render('login', { message: "Invalid credentials!" });
-});
-
-app.get('/logout', function(req, res){
-   req.session.destroy(function(){
-      console.log("user logged out.")
-   });
-   res.redirect('/login');
-});
-
-app.use('/protected_page', function(err, req, res, next){
-console.log(err);
-   //User should be authenticated! Redirect him to log in.
-   res.redirect('/login');
-});
-
 app.listen(3000);
