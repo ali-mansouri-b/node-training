@@ -1,17 +1,11 @@
 const express = require("express");
-const connectDB = require("./db");
-const todoRoutes = require("./routes/todoRoutes");
 const app = express();
-const PORT = 3000;
 
-// middleware for reading json from request
-app.use(express.json());
+const cookieParser = require("cookie-parser");
+app.use(cookieParser());
 
-// connect to database
-connectDB();
-
-app.use("/todos", todoRoutes);
-
-app.listen(PORT, () => {
-  console.log(`servier is running on http://localhost:${PORT}`);
+app.get("/", function (req, res) {
+  res.cookie("name", "express", { maxAge: 36000 }).send("cookie set"); //Sets name = express
 });
+
+app.listen(3000);
