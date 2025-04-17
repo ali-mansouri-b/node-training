@@ -1,12 +1,14 @@
-const express = require('express');
-const app = express();
-const rateLimit = require("express-rate-limit");
+var express = require('express');
+const slowDown = require("express-slow-down");
 
-// configure rate limiter with a time window of 10 minutes
+var app = express();
+
+// configure slow limiter with a time window of 10 minutes
 // and maximum 3 requests
-const limiter = rateLimit({
-  windowMs: 10 * 60 * 1000,
-  max: 3,
+const limiter = slowDown({
+  windowMs: 10 * 60 * 1000,  // 10 minutes
+  delayAfter: 3,  // allows 3 requests per 10 minutes
+  delayMs: (hits) => hits * 100, // Add 100 ms of delay to every request after 3rd request
 });
 
 app.use(limiter);
