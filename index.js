@@ -1,32 +1,40 @@
-const express = require('express')
-const multer  = require('multer')
-const os = require('os'); 
+var express = require('express');
+const i18next = require('i18next');
+const Backend = require('i18next-fs-backend');
+const middleware = require('i18next-http-middleware');
 
-// set the temp directory to upload a file
-const upload = multer({ dest: os.tmpdir() })
+var app = express();
 
-const app = express()
+i18next
+  .use(Backend)
+  .use(middleware.LanguageDetector)
+  .init({
+    fallbackLng: 'english', // Default language
+    backend: {
+      loadPath: './locales/{{lng}}/translation.json'
+    },
+    detection: {
+      // Order and types of detection
+      order: ['querystring', 'cookie', 'header'],
+      lookupQuerystring: 'lng',
+      lookupCookie: 'i18next',
+      caches: ['cookie']
+    },
+    interpolation: {
+      escapeValue: false // React already handles escaping
+    }
+  });
 
-// upload a single file
-app.post('/uploadFile', upload.single('uploadedFile'), function (req, res, next) {
-  // req.file is the `uploadedFile` file
-  const file = req.file;
-  const fileName = req.file.originalname;
+app.use(middleware.handle(i18next));
 
-  console.log(fileName + " saved in " + os.tmpdir());
-  console.log(file);
+app.get('/', (req, res) => {
+  res.status(200);
+  res.send(req.t('welcome')); // Uses the appropriate translation
+});
 
-  res.sendStatus(200);
-})
-
-// upload multiple files
-app.post('/uploadFiles', upload.array('uploadedFiles', 12), function (req, res, next) {
-  // req.files is the array of 'uploadedFiles' files
-  const files = req.files;
-  console.log("Files uploaded in " + os.tmpdir());
-  console.log(files);
-
-  res.sendStatus(200);
-})
+app.get('/greet/:name', (req, res) => {
+  res.status(200);
+  res.send(req.t('greeting', { name: req.params.name }));
+});
 
 app.listen(3000);
