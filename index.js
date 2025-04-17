@@ -1,40 +1,18 @@
-var express = require('express');
-const i18next = require('i18next');
-const Backend = require('i18next-fs-backend');
-const middleware = require('i18next-http-middleware');
+const express = require('express');
+const app = express();
+const rateLimit = require("express-rate-limit");
 
-var app = express();
-
-i18next
-  .use(Backend)
-  .use(middleware.LanguageDetector)
-  .init({
-    fallbackLng: 'english', // Default language
-    backend: {
-      loadPath: './locales/{{lng}}/translation.json'
-    },
-    detection: {
-      // Order and types of detection
-      order: ['querystring', 'cookie', 'header'],
-      lookupQuerystring: 'lng',
-      lookupCookie: 'i18next',
-      caches: ['cookie']
-    },
-    interpolation: {
-      escapeValue: false // React already handles escaping
-    }
-  });
-
-app.use(middleware.handle(i18next));
-
-app.get('/', (req, res) => {
-  res.status(200);
-  res.send(req.t('welcome')); // Uses the appropriate translation
+// configure rate limiter with a time window of 10 minutes
+// and maximum 3 requests
+const limiter = rateLimit({
+  windowMs: 10 * 60 * 1000,
+  max: 3,
 });
 
-app.get('/greet/:name', (req, res) => {
-  res.status(200);
-  res.send(req.t('greeting', { name: req.params.name }));
+app.use(limiter);
+
+app.get('/', function(req, res){
+   res.send("Hello world!");
 });
 
 app.listen(3000);
