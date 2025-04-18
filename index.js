@@ -1,21 +1,18 @@
-const express = require("express");
-const app = express();
+var debug = require('debug')('http')
+  , http = require('http')
+  , name = 'My App';
 
-app.get("/", function (req, res, next) {
-  //Create an error and pass it to the next function
-  const err = new Error("Something went wrong");
-  next(err);
+// fake app
+
+debug('booting %o', name);
+
+http.createServer(function(req, res){
+  debug(req.method + ' ' + req.url);
+  res.end('hello\n');
+}).listen(3000, function(){
+  debug('listening');
 });
 
-/*
- * other route handlers and middleware here
- * ....
- */
+// fake worker of some kind
 
-//An error handling middleware
-app.use(function (err, req, res, next) {
-  res.status(500);
-  res.send("Oops, something went wrong.");
-});
-
-app.listen(3000);
+require('./worker');
