@@ -1,20 +1,21 @@
-var express = require('express');
-const slowDown = require("express-slow-down");
+const express = require("express");
+const app = express();
 
-var app = express();
-
-// configure slow limiter with a time window of 10 minutes
-// and maximum 3 requests
-const limiter = slowDown({
-  windowMs: 10 * 60 * 1000,  // 10 minutes
-  delayAfter: 3,  // allows 3 requests per 10 minutes
-  delayMs: (hits) => hits * 100, // Add 100 ms of delay to every request after 3rd request
+app.get("/", function (req, res, next) {
+  //Create an error and pass it to the next function
+  const err = new Error("Something went wrong");
+  next(err);
 });
 
-app.use(limiter);
+/*
+ * other route handlers and middleware here
+ * ....
+ */
 
-app.get('/', function(req, res){
-   res.send("Hello world!");
+//An error handling middleware
+app.use(function (err, req, res, next) {
+  res.status(500);
+  res.send("Oops, something went wrong.");
 });
 
 app.listen(3000);
